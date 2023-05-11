@@ -111,6 +111,18 @@ describe("titleFormatter", () => {
         expect(toTitleCase("When I WENT TO The Store", false)).toBe("When I Went to the Store");
     });
 
+    it("toTitleCase custom MNM gaming vs. W7M // BLAST R6 Copenhagen major | finals | day 1", () => {
+        expect(toTitleCase("MNM gaming vs. W7M // BLAST R6 Copenhagen major | finals | day 1", true)).toBe("MNM Gaming vs. W7M // BLAST R6 Copenhagen Major | Finals | Day 1");
+    });
+
+    it("toTitleCase custom [SMii7Y VOD] CS:GO Never Changed", () => {
+        expect(toTitleCase("[SMii7Y VOD] CS:GO Never Changed", true)).toBe("[SMii7Y VOD] CS:GO Never Changed");
+    });
+
+    it("toTitleCase custom NaVi vs. FaZe - map 1 [Inferno] - IEM Cologne 2022 - grand final", () => {
+        expect(toTitleCase("NaVi vs. FaZe - map 1 [Inferno] - IEM Cologne 2022 - grand final", true)).toBe("NaVi vs. FaZe - Map 1 [Inferno] - IEM Cologne 2022 - Grand Final");
+    });
+
     it("toSentenceCase Go on the table with a cat", () => {
         expect(toSentenceCase("Go on the table with a cat", false)).toBe("Go on the table with a cat");
     });

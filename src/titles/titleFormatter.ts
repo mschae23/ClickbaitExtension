@@ -1,6 +1,6 @@
 import Config, { TitleFormatting } from "../config";
 
-const sentenceCaseNotCapitalized = [
+const titleCaseNotCapitalized = [
     "a",
     "an",
     "the",
@@ -25,7 +25,15 @@ const sentenceCaseNotCapitalized = [
     "at",
     "by",
     "via",
-    "to"
+    "to",
+    "vs",
+    "v.s.",
+    "vs.",
+    "ft",
+    "ft.",
+    "feat",
+    "etc.",
+    "etc"
 ];
 
 export function formatTitle(title: string, isCustom: boolean): string {
@@ -57,7 +65,10 @@ export function toSentenceCase(str: string, isCustom: boolean): string {
         } else if (isAcronymStrict(word) 
             || (!inTitleCase && trustCaps && isAcronym(word))
             || (!inTitleCase && isWordCaptialCase(word)) 
-            || (isCustom && isWordCustomCaptialization(word))) {
+            || (isCustom && isWordCustomCaptialization(word))
+            || (!isAllCaps(word) && isWordCustomCaptialization(word))) {
+            // For custom titles, allow any not just first capital
+            // For non-custom, allow any that isn't all caps
             // Trust it with capitalization
             result += word + " ";
         } else {
@@ -84,11 +95,13 @@ export function toTitleCase(str: string, isCustom: boolean): string {
         const trustCaps = !mostlyAllCaps && 
             !(isAllCaps(words[index - 1]) || isAllCaps(words[index + 1]));
 
-        // Skip lowercase check for the first word
-        if (isCustom && isWordCustomCaptialization(word)) {
-            // Trust it with capitalization
+        if ((isCustom && isWordCustomCaptialization(word))
+            || (!isAllCaps(word) && isWordCustomCaptialization(word))) {
+            // For custom titles, allow any not just first capital
+            // For non-custom, allow any that isn't all caps
             result += word + " ";
-        } else if (result.length !== 0 && sentenceCaseNotCapitalized.includes(word.toLowerCase())) {
+        } else if (result.length !== 0 && titleCaseNotCapitalized.includes(word.toLowerCase())) {
+            // Skip lowercase check for the first word
             result += word.toLowerCase() + " ";
         } else if (isFirstLetterCaptial(word) && 
                 ((trustCaps && isAcronym(word)) || isAcronymStrict(word))) {
@@ -111,8 +124,11 @@ export function toCapitalizeCase(str: string, isCustom: boolean): string {
     let result = "";
     for (const word of words) {
         if ((isCustom && isWordCustomCaptialization(word)) 
+                || (!isAllCaps(word) && isWordCustomCaptialization(word))
                 || (isFirstLetterCaptial(word) && 
                 ((!mostlyAllCaps && isAcronym(word)) || isAcronymStrict(word)))) {
+            // For custom titles, allow any not just first capital
+            // For non-custom, allow any that isn't all caps
             // Trust it with capitalization
             result += word + " ";
         } else {
@@ -185,7 +201,7 @@ export function isInTitleCase(words: string[]): boolean {
         if (isWordCaptialCase(word)) {
             count++;
         } else if (!isWordAllLower(word) ||
-                sentenceCaseNotCapitalized.includes(word.toLowerCase())) {
+                titleCaseNotCapitalized.includes(word.toLowerCase())) {
             ignored++;
         }
     }
