@@ -123,6 +123,61 @@ export function toCapitalizeCase(str: string, isCustom: boolean): string {
     return result.trim();
 }
 
+// How likely it is that `word` should keep its case
+export function getEccentricity(word: string): number {
+    word = word.trim();
+
+    if (word === "") {
+        return 0.0;
+    }
+
+    const lowerCaseCount = (word.match(/[a-z]/g) || []).length;
+    // const lowerCaseNonFirstCount = (word.match(/(?<!^)[a-z]/g) || []).length;
+    const upperCaseCount = (word.match(/[A-Z]/g) || []).length;
+    const upperCaseNonFirstCount = (word.match(/(?<!^)[A-Z]/g) || []).length;
+
+    const numericCount = (word.match(/[0-9]/g) || []).length;
+    const specialCount = (word.match(/(?![a-zA-Z0-9])\S/) || []).length;
+    const alphaCount = lowerCaseCount + upperCaseCount;
+    const alphanumericCount = alphaCount + numericCount;
+    const totalCount = alphanumericCount + specialCount;
+
+    const mostlyUpper = isWordMostlyCapital(word);
+    const otherCaseCount = mostlyUpper ? lowerCaseCount : upperCaseNonFirstCount;
+
+    let eccentricity = 0.0;
+
+    eccentricity += ((otherCaseCount === 0.0 ? 0.0 : 20.0 / otherCaseCount) + (numericCount === 0.0 ? 0.0 : 30.0 / numericCount)) / alphanumericCount;
+    eccentricity += 15 * specialCount / totalCount;
+
+    return eccentricity;
+}
+
+// How likely it is that words in `title` are already in the correct case when Sentence case is being used
+export function getTitleTrustworthiness(title: string): number {
+    title = title.trim();
+
+    if (title.trim() === "") {
+        return 0.0;
+    }
+
+    // TODO
+
+    return 0.0;
+}
+
+export function isWordMostlyCapital(word: string): boolean {
+    // Duplicated from getEccentricity, maybe change this to not be repeated
+    const lowerCaseCount = (word.match(/[a-z]/g) || []).length;
+    const lowerCaseNonFirstCount = (word.match(/(?<!^)[a-z]/g) || []).length;
+    const upperCaseCount = (word.match(/[A-Z]/g) || []).length;
+    const upperCaseNonFirstCount = (word.match(/(?<!^)[A-Z]/g) || []).length;
+    // const alphaCount = lowerCaseCount + upperCaseCount;
+
+    return upperCaseCount > lowerCaseCount ||
+        (lowerCaseCount == upperCaseCount && upperCaseNonFirstCount > lowerCaseNonFirstCount);
+}
+
 export function isInTitleCase(words: string[]): boolean {
     let count = 0;
     let ignored = 0;

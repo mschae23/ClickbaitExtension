@@ -1,4 +1,4 @@
-import { capitalizeFirstLetter, isAcronym, isAcronymStrict, isInTitleCase, isMostlyAllCaps, toCapitalizeCase, toSentenceCase, toTitleCase } from "../src/titles/titleFormatter";
+import { capitalizeFirstLetter, getEccentricity, isAcronym, isAcronymStrict, isInTitleCase, isMostlyAllCaps, isWordMostlyCapital, toCapitalizeCase, toSentenceCase, toTitleCase } from "../src/titles/titleFormatter";
 
 // Acronym Tests
 describe("Acronym Tests", () => {
@@ -221,4 +221,71 @@ describe("titleFormatter custom cases", () => {
             expect(toSentenceCase(input, true)).toBe(sentence);
         });
     }
-})
+});
+
+describe("titleFormatter test", () => {
+    it("count matches 1", () => {
+        expect(("aaa".match(/a/g) || []).length).toBe(3);
+    });
+
+    it("count matches 2", () => {
+        expect(("".match(/a/g) || []).length).toBe(0);
+    });
+
+    const mostlyCapitalisedWordTests: [string, boolean][] = [
+        ["something", false],
+        ["Something", false],
+        ["SOMEthing", false],
+        ["someTHING", true],
+        ["SOMETHING", true],
+        ["sOmEtHiNg", false],
+        ["SoMeThInG", true],
+        ["iOS", true],
+        ["tvOS", true],
+        ["macOS", false],
+        ["Am", false],
+        ["x", false],
+        ["X", true],
+        ["3", false],
+        ["", false],
+    ];
+
+    for (const testCase of mostlyCapitalisedWordTests) {
+        const [input, expected] = testCase;
+        it(`isWordMostlyCapital "${input}"`, () => {
+            expect(isWordMostlyCapital(input)).toBe(expected);
+        });
+    }
+
+    const eccentricityTests: [string, number][] = [
+        ["something", 0.0],
+        ["Something", 0.0],
+        ["SOMEthing", 0.7407407407407408],
+        ["someTHING", 0.5555555555555556],
+        ["SOMETHING", 0.0],
+        ["sOmEtHiNg", 0.5555555555555556],
+        ["SoMeThInG", 0.5555555555555556],
+        ["iOS", 6.666666666666667],
+        ["tvOS", 2.5],
+        ["macOS", 2.0],
+        ["GitHub", 3.3333333333333335],
+        ["LaTeX", 2.0],
+        ["I/O", 5.0],
+        ["HTML5", 6.0],
+        ["CSS3", 7.5],
+        ["am", 0.0],
+        ["Am", 0.0],
+        ["I", 0.0],
+        ["x", 0.0],
+        ["X", 0.0],
+        ["3", 30.0],
+        ["", 0.0],
+    ];
+
+    for (const testCase of eccentricityTests) {
+        const [input, expected] = testCase;
+        it(`getEccentricity "${input}"`, () => {
+            expect(getEccentricity(input)).toBe(expected);
+        });
+    }
+});
