@@ -173,11 +173,16 @@ export function getEccentricity(word: string): number {
 export function getTitleTrustworthiness(title: string): number {
     title = title.trim();
 
-    if (title.trim() === "") {
+    if (title === "") {
         return 0.0;
     }
 
+    const words = title.split(" ");
+
     // TODO
+
+    for (const word of words) {
+    }
 
     return 0.0;
 }
